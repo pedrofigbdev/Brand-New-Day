@@ -1,0 +1,870 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+@font-face {
+  font-family: "Good Times";
+  src:
+    url("https://cdn.jsdelivr.net/gh/nicholasgillespie/goodtimes@master/goodtimesrg.woff2")
+      format("woff2"),
+    url("https://fonts.cdnfonts.com/css/good-times") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+html,
+body {
+  width: 100%;
+  min-height: 100vh;
+  overflow-x: hidden;
+  background: #69040c;
+  font-family: "Poppins", sans-serif;
+}
+
+.hero {
+  position: relative;
+  width: 100%;
+  min-height: 100vh;
+  aspect-ratio: 1920 / 1080;
+  max-height: 100vh;
+  background-color: #69040c;
+  overflow: hidden;
+}
+
+.hero-bg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: url("./assets/bg-7cd22c.png");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  z-index: 0;
+}
+
+.hero-bg::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(105, 4, 12, 0.78);
+  mix-blend-mode: multiply;
+  z-index: 1;
+  pointer-events: none;
+}
+
+.hero-mask {
+  position: absolute;
+  top: 2.592592593%;
+  left: 1.458333333%;
+  width: 97.08333333%;
+  height: 94.81481481%;
+  z-index: 2;
+  background: #000;
+  clip-path: url(#heroClipPath);
+  -webkit-clip-path: url(#heroClipPath);
+  box-shadow: 0 4px 40px rgba(0, 0, 0, 0.35);
+}
+
+.spiderman-bg {
+  position: absolute;
+  top: -2.734375%;
+  left: -1.502145923%;
+  width: 103.0042918%;
+  height: 105.46875%;
+  object-fit: cover;
+  display: block;
+}
+
+.side-icon {
+  position: absolute;
+  top: 19.07407407%;
+  left: 95.57291667%;
+  width: clamp(16px, 1.25vw, 24px);
+  height: clamp(22px, 1.666666667vw, 32px);
+  mix-blend-mode: difference;
+  z-index: 10;
+}
+
+.header {
+  position: absolute;
+  top: 2.592592593%;
+  left: 1.458333333%;
+  width: 97.08333333%;
+  height: clamp(44px, 3.229166667vw, 62px);
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  z-index: 20;
+}
+
+.header-left {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: clamp(14px, 1.666666667vw, 32px);
+  height: clamp(38px, 2.604166667vw, 50px);
+}
+
+.vector-logo {
+  width: clamp(22px, 1.979166667vw, 38px);
+  height: clamp(38px, 2.604166667vw, 50px);
+  display: block;
+}
+
+.marvel-logo {
+  width: clamp(46px, 4.0625vw, 78px);
+  height: clamp(18px, 1.5625vw, 30px);
+  display: block;
+}
+
+.header-right {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 10px;
+  margin-top: 0;
+  height: clamp(44px, 3.229166667vw, 62px);
+}
+
+.trailer-text {
+  font-family: "Poppins", sans-serif;
+  font-style: normal;
+  font-weight: 400;
+  font-size: clamp(12px, 1.9375vw, 18px);
+  line-height: 1.5;
+  color: rgba(255, 255, 255, 0.8);
+  cursor: pointer;
+  margin-top: 20px;
+}
+
+.buy-ticket-btn {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  padding: clamp(8px, 0.8333333333vw, 16px) clamp(12px, 1.041666667vw, 20px);
+  gap: clamp(6px, 0.4166666667vw, 8px);
+  margin-top: 8.5%;
+  height: clamp(44px, 3.229166667vw, 62px);
+  background: #ffffff;
+  border-radius: 64px;
+  border: none;
+  cursor: pointer;
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.buy-ticket-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+}
+
+.buy-ticket-text {
+  font-family: "Poppins", sans-serif;
+  font-style: normal;
+  font-weight: 500;
+  font-size: clamp(12px, 0.9375vw, 18px);
+  line-height: 1.5;
+  letter-spacing: -0.03em;
+  color: rgba(0, 0, 0, 0.9);
+  white-space: nowrap;
+}
+
+.ticket-icon {
+  width: clamp(17px, 1.354166667vw, 26px);
+  height: clamp(17px, 1.354166667vw, 26px);
+  display: block;
+  flex-shrink: 0;
+}
+
+.logo-section {
+  position: absolute;
+  top: 43.00925926%;
+  left: 4.322916667%;
+  width: clamp(260px, 23.17708333vw, 445px);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: clamp(20px, 2.083333333vw, 40px);
+  z-index: 15;
+}
+
+.spiderman-logo {
+  width: 100%;
+  height: auto;
+  aspect-ratio: 445 / 103;
+  display: block;
+}
+
+.brand-new-day {
+  font-family: "Good Times", "Bebas Neue", sans-serif;
+  font-style: normal;
+  font-weight: 400;
+  font-size: clamp(22px, 2.1875vw, 42px);
+  line-height: 1.261904762;
+  color: #e2ab00;
+  text-transform: lowercase;
+}
+
+.synopsis {
+  position: absolute;
+  top: 44.07407407%;
+  left: 72.70833333%;
+  width: clamp(240px, 23.48958333vw, 451px);
+  font-family: "Poppins", sans-serif;
+  font-style: normal;
+  font-weight: 400;
+  font-size: clamp(13px, 1.09375vw, 21px);
+  line-height: 1.523809524;
+  color: rgba(0, 0, 0, 0.9);
+  z-index: 15;
+}
+
+.release-date {
+  position: absolute;
+  top: 86.2962963%;
+  left: 1.458333333%;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+  z-index: 15;
+}
+
+.release-label {
+  font-family: "Poppins", sans-serif;
+  font-style: normal;
+  font-weight: 400;
+  font-size: clamp(11px, 0.9375vw, 18px);
+  line-height: 1.5;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.release-value {
+  font-family: "Good Times", "Bebas Neue", sans-serif;
+  font-style: normal;
+  font-weight: 400;
+  font-size: clamp(28px, 2.760416667vw, 53px);
+  line-height: 1.264150943;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.scroll-circle {
+  position: absolute;
+  top: 78.24074074%;
+  left: 87.76041667%;
+  width: clamp(95px, 8.59375vw, 165px);
+  height: clamp(95px, 8.59375vw, 165px);
+  z-index: 15;
+}
+
+.circle-text-svg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  transform: rotate(0deg);
+  animation: spin 20s linear infinite;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.hand-icon {
+  position: absolute;
+  top: 24.84848485%;
+  left: 24.84848485%;
+  width: 50.3030303%;
+  height: 50.3030303%;
+  display: block;
+  z-index: 1;
+}
+
+.cast {
+  position: relative;
+  width: 100%;
+  min-height: 100vh;
+  aspect-ratio: 1920 / 1080;
+  max-height: 100vh;
+  background-color: #000000;
+  overflow: hidden;
+}
+
+.cast-image {
+  position: absolute;
+  top: 15.64814815%;
+  left: 27.39583333%;
+  width: 68.59375%;
+  height: 72.5%;
+  object-fit: cover;
+  display: block;
+  border-radius: 40px;
+  border: clamp(1px, 0.1041666667vw, 2px) solid rgba(255, 255, 255, 0.14);
+}
+
+.cast-block {
+  position: absolute;
+  top: 21.38888889%;
+  left: 3.802083333%;
+  width: clamp(240px, 17.34375vw, 333px);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: clamp(70px, 8.020833333vw, 154px);
+  z-index: 10;
+}
+
+.cast-title {
+  font-family: "Good Times", "Bebas Neue", sans-serif;
+  font-style: normal;
+  font-weight: 400;
+  font-size: clamp(22px, 1.666666667vw, 32px);
+  line-height: 1.25;
+  color: rgba(255, 255, 255, 0.9);
+  text-transform: lowercase;
+}
+
+.cast-actor-block {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 4px;
+  width: 100%;
+}
+
+.cast-actor-name {
+  font-family: "Poppins", sans-serif;
+  font-style: normal;
+  font-weight: 400;
+  font-size: clamp(38px, 3.229166667vw, 62px);
+  line-height: 1.193548387;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.cast-actor-role {
+  font-family: "Poppins", sans-serif;
+  font-style: normal;
+  font-weight: 400;
+  font-size: clamp(14px, 1.041666667vw, 20px);
+  line-height: 1.5;
+  color: rgba(255, 255, 255, 0.75);
+  text-transform: uppercase;
+}
+
+.cast-list {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: clamp(12px, 1.041666667vw, 20px);
+}
+
+.cast-list-bar {
+  width: clamp(14px, 1.041666667vw, 20px);
+  height: clamp(100px, 7.5vw, 144px);
+  object-fit: contain;
+  display: block;
+  flex-shrink: 0;
+}
+
+.cast-list-items {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: clamp(10px, 1.041666667vw, 20px);
+}
+
+.cast-list-item {
+  font-family: "Poppins", sans-serif;
+  font-style: normal;
+  font-weight: 400;
+  font-size: clamp(10px, 0.7291666667vw, 14px);
+  line-height: 1.5;
+  color: rgba(255, 255, 255, 0.5);
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+
+.cast-list-item--selected {
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.cast-list-item:hover {
+  color: rgba(255, 255, 255, 0.9);
+}
+
+@media (max-width: 1440px) {
+  .brand-new-day {
+    font-size: clamp(26px, 2.5vw, 36px);
+  }
+
+  .synopsis {
+    font-size: clamp(14px, 1.25vw, 18px);
+  }
+
+  .release-value {
+    font-size: clamp(32px, 3.2vw, 46px);
+  }
+
+  .cast-actor-name {
+    font-size: clamp(34px, 3.6vw, 54px);
+  }
+
+  .cast-block {
+    gap: clamp(62px, 7vw, 120px);
+  }
+}
+
+@media (max-width: 1024px) {
+  .hero {
+    aspect-ratio: auto;
+    min-height: 100vh;
+    max-height: none;
+  }
+
+  .hero-mask {
+    top: 24px;
+    left: 18px;
+    right: 18px;
+    bottom: 24px;
+    width: auto;
+    height: auto;
+  }
+
+  .spiderman-bg {
+    top: -24px;
+    left: -18px;
+    width: calc(100% + 36px);
+    height: calc(100% + 48px);
+  }
+
+  .side-icon {
+    top: 14%;
+    left: auto;
+    right: 2%;
+    width: 20px;
+    height: 28px;
+  }
+
+  .header {
+    top: 24px;
+    left: 18px;
+    width: calc(100% - 36px);
+    height: clamp(50px, 5.078125vw, 52px);
+  }
+
+  .logo-section {
+    top: 18%;
+    left: 4%;
+    width: clamp(280px, 33.203125vw, 340px);
+    gap: clamp(22px, 2.734375vw, 28px);
+  }
+
+  .brand-new-day {
+    font-size: clamp(24px, 3.125vw, 32px);
+  }
+
+  .synopsis {
+    top: auto;
+    bottom: 22%;
+    left: auto;
+    right: 4%;
+    width: clamp(280px, 35.15625vw, 360px);
+    font-size: clamp(14px, 1.5625vw, 16px);
+    line-height: 1.625;
+  }
+
+  .release-date {
+    top: auto;
+    bottom: 4%;
+    left: 4%;
+  }
+
+  .release-label {
+    font-size: 14px;
+    line-height: 21px;
+  }
+
+  .release-value {
+    font-size: clamp(30px, 3.90625vw, 40px);
+    line-height: 50px;
+  }
+
+  .scroll-circle {
+    top: auto;
+    bottom: 4%;
+    left: auto;
+    right: 4%;
+    width: clamp(105px, 12.20703125vw, 125px);
+    height: clamp(105px, 12.20703125vw, 125px);
+  }
+
+  .cast {
+    aspect-ratio: auto;
+    min-height: 100vh;
+    max-height: none;
+  }
+
+  .cast-image {
+    top: 18%;
+    left: 4%;
+    right: 4%;
+    bottom: 44%;
+    width: auto;
+    height: 38%;
+    border-radius: 32px;
+  }
+
+  .cast-block {
+    top: auto;
+    bottom: 5%;
+    left: 4%;
+    width: calc(100% - 8%);
+    max-width: 480px;
+    gap: clamp(40px, 5vw, 80px);
+  }
+
+  .cast-list {
+    flex-direction: row;
+  }
+}
+
+@media (max-width: 768px) {
+  .hero {
+    min-height: 100vh;
+    height: auto;
+  }
+
+  .hero-mask {
+    top: 14px;
+    left: 14px;
+    right: 14px;
+    bottom: 14px;
+    width: auto;
+    height: auto;
+  }
+
+  .spiderman-bg {
+    top: -14px;
+    left: -14px;
+    width: calc(100% + 28px);
+    height: calc(100% + 28px);
+  }
+
+  .side-icon {
+    display: none;
+  }
+
+  .header {
+    top: 14px;
+    left: 14px;
+    width: calc(100% - 28px);
+    height: 48px;
+  }
+
+  .header-left {
+    gap: 14px;
+    height: 38px;
+  }
+
+  .vector-logo {
+    width: 26px;
+    height: 38px;
+  }
+
+  .marvel-logo {
+    width: 54px;
+    height: 21px;
+  }
+
+  .header-right {
+    gap: 14px;
+    height: 48px;
+  }
+
+  .trailer-text {
+    display: none;
+  }
+
+  .buy-ticket-btn {
+    padding: 10px 14px;
+    height: 48px;
+    gap: 6px;
+  }
+
+  .buy-ticket-text {
+    font-size: 13px;
+    line-height: 19px;
+  }
+
+  .ticket-icon {
+    width: 19px;
+    height: 19px;
+  }
+
+  .logo-section {
+    position: relative;
+    top: auto;
+    left: auto;
+    padding: 112px 24px 0;
+    width: 100%;
+    max-width: 100%;
+    gap: 24px;
+    align-items: center;
+    text-align: center;
+  }
+
+  .spiderman-logo {
+    max-width: 300px;
+    margin: 0 auto;
+    width: 100%;
+  }
+
+  .brand-new-day {
+    font-size: clamp(24px, 7vw, 28px);
+    line-height: 36px;
+    text-align: center;
+  }
+
+  .synopsis {
+    position: relative;
+    top: auto;
+    bottom: auto;
+    left: auto;
+    right: auto;
+    padding: 36px 24px 0;
+    width: 100%;
+    max-width: 100%;
+    font-size: 15px;
+    line-height: 24px;
+    text-align: center;
+  }
+
+  .release-date {
+    position: relative;
+    top: auto;
+    bottom: auto;
+    left: auto;
+    padding: 36px 24px 0;
+    align-items: center;
+    text-align: center;
+    gap: 4px;
+  }
+
+  .release-label {
+    font-size: 13px;
+    line-height: 19px;
+    text-align: center;
+  }
+
+  .release-value {
+    font-size: clamp(30px, 9vw, 36px);
+    line-height: 45px;
+    text-align: center;
+  }
+
+  .scroll-circle {
+    position: relative;
+    top: auto;
+    bottom: auto;
+    left: auto;
+    right: auto;
+    margin: 36px auto 36px;
+    width: 115px;
+    height: 115px;
+  }
+
+  .cast {
+    min-height: 100vh;
+    height: auto;
+  }
+
+  .cast-image {
+    top: 14%;
+    left: 14px;
+    right: 14px;
+    bottom: auto;
+    width: calc(100% - 28px);
+    height: 36%;
+    border-radius: 28px;
+  }
+
+  .cast-block {
+    position: relative;
+    top: auto;
+    bottom: auto;
+    left: auto;
+    padding: calc(50% + 24px) 24px 36px;
+    width: 100%;
+    max-width: 100%;
+    gap: 32px;
+    align-items: center;
+    text-align: center;
+  }
+
+  .cast-title {
+    text-align: center;
+  }
+
+  .cast-actor-block {
+    align-items: center;
+    gap: 4px;
+  }
+
+  .cast-list {
+    justify-content: center;
+    flex-direction: row;
+    align-items: center;
+  }
+
+  .cast-list-items {
+    align-items: center;
+    gap: 14px;
+  }
+
+  .cast-list-item {
+    text-align: center;
+  }
+}
+
+@media (max-width: 480px) {
+  .hero-mask {
+    top: 10px;
+    left: 10px;
+    right: 10px;
+    bottom: 10px;
+  }
+
+  .spiderman-bg {
+    top: -10px;
+    left: -10px;
+    width: calc(100% + 20px);
+    height: calc(100% + 20px);
+  }
+
+  .header {
+    top: 10px;
+    left: 10px;
+    width: calc(100% - 20px);
+  }
+
+  .header-left {
+    gap: 10px;
+  }
+
+  .vector-logo {
+    width: 22px;
+    height: 32px;
+  }
+
+  .marvel-logo {
+    width: 46px;
+    height: 18px;
+  }
+
+  .buy-ticket-btn {
+    padding: 8px 12px;
+    height: 44px;
+  }
+
+  .buy-ticket-text {
+    font-size: 12px;
+    line-height: 18px;
+  }
+
+  .ticket-icon {
+    width: 17px;
+    height: 17px;
+  }
+
+  .logo-section {
+    padding: 96px 18px 0;
+    gap: 20px;
+  }
+
+  .spiderman-logo {
+    max-width: 260px;
+  }
+
+  .brand-new-day {
+    font-size: 24px;
+    line-height: 30px;
+  }
+
+  .synopsis {
+    padding: 30px 18px 0;
+    font-size: 14px;
+    line-height: 22px;
+  }
+
+  .release-date {
+    padding: 30px 18px 0;
+    gap: 2px;
+  }
+
+  .release-label {
+    font-size: 12px;
+    line-height: 18px;
+  }
+
+  .release-value {
+    font-size: 32px;
+    line-height: 40px;
+  }
+
+  .scroll-circle {
+    width: 105px;
+    height: 105px;
+    margin: 30px auto 30px;
+  }
+
+  .cast-image {
+    top: 12%;
+    left: 10px;
+    right: 10px;
+    width: calc(100% - 20px);
+    height: 34%;
+    border-radius: 24px;
+  }
+
+  .cast-block {
+    padding: calc(46% + 20px) 18px 30px;
+    gap: 26px;
+  }
+
+  .cast-actor-name {
+    font-size: clamp(32px, 10vw, 44px);
+  }
+
+  .cast-actor-role {
+    font-size: 13px;
+    line-height: 20px;
+  }
+
+  .cast-list-bar {
+    width: 16px;
+    height: 112px;
+  }
+
+  .cast-list-items {
+    gap: 12px;
+  }
+}
