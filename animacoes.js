@@ -326,6 +326,197 @@
     return updateAvailability;
   }
 
+  function initCastAnimations() {
+    const section = document.querySelector("#elenco");
+    const slides = gsap.utils.toArray(".cast__slide", section);
+    if (!section || slides.length === 0) return;
+
+    const media = section.querySelector(".cast__media");
+    const person = section.querySelector(".cast__person");
+    const picker = section.querySelector(".cast__picker");
+    const options = section.querySelector(".cast__options");
+    const rail = section.querySelector(".cast__rail");
+    const fill = section.querySelector(".cast__progress");
+    const spider = section.querySelector(".cast__spider");
+    const state = { actor: 0 };
+    const people = [];
+    const buttons = [];
+    const stops = [];
+    let selected = -1;
+    let travel = 0;
+    let castTrigger;
+    const revealDuration = 1.2;
+    const holdSeconds = 0.3;
+    const forwardStops = [];
+    const backwardStops = [];
+    let lastTime = 0;
+    let holding = false;
+    let holdTimer;
+    let navigationUntil = 0;
+
+    function releaseHold() {
+      if (holdTimer) holdTimer.kill();
+      holdTimer = null;
+      if (!holding) return;
+      holding = false;
+      smoother.paused(false);
+    }
+
+    function holdAt(time) {
+      if (holding || smoother.paused()) return;
+      holding = true;
+      lastTime = time;
+      const position =
+        castTrigger.start +
+        ((castTrigger.end - castTrigger.start) * time) / timeline.duration();
+      // Discard excess wheel momentum at a fully revealed image.
+      smoother.scrollTop(position);
+      castTrigger.getTween()?.pause();
+      timeline.time(time, true);
+      renderCast();
+      smoother.paused(true);
+      holdTimer = gsap.delayedCall(holdSeconds, releaseHold);
+    }
+
+    function updateCast() {
+      if (!holding && castTrigger) {
+        const time = timeline.time();
+        if (performance.now() >= navigationUntil) {
+          const forward = time > lastTime;
+          const boundary = (forward ? forwardStops : backwardStops).find(
+            (stop) =>
+              forward
+                ? stop > lastTime + 0.001 && stop <= time
+                : stop < lastTime - 0.001 && stop >= time,
+          );
+          if (boundary !== undefined) {
+            holdAt(boundary);
+            return;
+          }
+        }
+        lastTime = time;
+      }
+      renderCast();
+    }
+
+    person.replaceChildren();
+    slides.forEach((slide, index) => {
+      const item = document.createElement("div");
+      item.className = "cast__person-item";
+      const name = document.createElement("h3");
+      name.textContent = slide.dataset.name;
+      const role = document.createElement("p");
+      role.textContent = slide.dataset.role;
+      item.append(name, role);
+      person.append(item);
+      people.push(item);
+      slide.querySelector("img").alt = slide.dataset.name;
+
+      const button = document.createElement("button");
+      button.type = "button";
+      button.className = "cast__option";
+      button.textContent = slide.dataset.name;
+      button.addEventListener("click", () => {
+        releaseHold();
+        // Direct selection should not stop at every intermediate actor.
+        navigationUntil = performance.now() + 2500;
+        const progress = stops[index] / timeline.duration();
+        smoother.scrollTo(
+          castTrigger.start + (castTrigger.end - castTrigger.start) * progress,
+          true,
+        );
+      });
+      options.append(button);
+      buttons.push(button);
+    });
+
+    function renderCast() {
+      const progress =
+        slides.length > 1 ? state.actor / (slides.length - 1) : 0;
+      gsap.set(fill, { scaleY: progress });
+      gsap.set(spider, { y: progress * travel });
+      const current = Math.round(state.actor);
+      if (current === selected) return;
+      selected = current;
+      slides.forEach((slide, index) => {
+        const active = index === current;
+        slide.setAttribute("aria-hidden", String(!active));
+        people[index].setAttribute("aria-hidden", String(!active));
+        buttons[index].classList.toggle("is-active", active);
+        if (active) buttons[index].setAttribute("aria-current", "true");
+        else buttons[index].removeAttribute("aria-current");
+      });
+    }
+
+    function measureCast() {
+      // Images keep a fixed full-stage height while their wrappers reveal them.
+      media.style.setProperty("--cast-image-height", `${media.clientHeight}px`);
+      const box = picker.getBoundingClientRect();
+      const first = buttons[0].getBoundingClientRect();
+      const last = buttons[buttons.length - 1].getBoundingClientRect();
+      travel = last.top + last.height / 2 - first.top - first.height / 2;
+      rail.style.setProperty(
+        "--cast-rail-top",
+        `${first.top + first.height / 2 - box.top}px`,
+      );
+      rail.style.setProperty("--cast-rail-height", `${travel}px`);
+      renderCast();
+    }
+
+    gsap.set(people.slice(1), { autoAlpha: 0 });
+    const timeline = gsap.timeline({ paused: true, onUpdate: updateCast });
+    stops.push(0.2);
+    slides.slice(1).forEach((slide, offset) => {
+      const index = offset + 1;
+      const start = 0.6 + offset * (revealDuration + 0.55);
+      forwardStops.push(start + revealDuration);
+      backwardStops.unshift(start);
+      timeline.to(
+        slide,
+        { height: "100%", duration: revealDuration, ease: "none" },
+        start,
+      );
+      timeline.to(
+        state,
+        { actor: index, duration: revealDuration, ease: "none" },
+        start,
+      );
+      timeline.to(
+        people[index - 1],
+        { autoAlpha: 0, duration: 0.25 },
+        start + 0.35,
+      );
+      timeline.to(people[index], { autoAlpha: 1, duration: 0.25 }, start + 0.6);
+      stops.push(start + revealDuration + 0.2);
+    });
+    timeline.to({}, { duration: 0.55 });
+    measureCast();
+
+    // Created after the hero trigger so its pin spacing is included in start.
+    castTrigger = ScrollTrigger.create({
+      id: "cast-story",
+      trigger: section,
+      start: "top top",
+      end: () =>
+        `+=${window.innerHeight * Math.max(1, slides.length - 1) * 1.5}`,
+      pin: true,
+      anticipatePin: 1,
+      scrub: 0.55,
+      animation: timeline,
+      onRefreshInit: releaseHold,
+      onRefresh: measureCast,
+    });
+
+    document
+      .querySelector('.header-right a[href="#elenco"]')
+      .addEventListener("click", (event) => {
+        if (event.ctrlKey || event.metaKey || event.shiftKey || event.altKey)
+          return;
+        event.preventDefault();
+        smoother.scrollTo(castTrigger.start + 1, true);
+      });
+  }
+
   function initAnimations() {
     if (canvas) {
       setCanvasSize();
@@ -471,6 +662,7 @@
         smoother.scrollTo(destination, true);
       });
 
+    initCastAnimations();
     ScrollTrigger.refresh();
   }
 
