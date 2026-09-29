@@ -13,11 +13,13 @@
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
-    <svg width="0" height="0" style="position: absolute" aria-hidden="true">
-      <defs>
-        <clipPath id="heroClipPath" clipPathUnits="objectBoundingBox">
-          <path
-            d="M 0.8119612069 0.0708661417
+    <div id="smooth-wrapper">
+      <div id="smooth-content">
+        <svg width="0" height="0" style="position: absolute" aria-hidden="true">
+          <defs>
+            <clipPath id="heroClipPath" clipPathUnits="objectBoundingBox">
+              <path
+                d="M 0.8119612069 0.0708661417
                C 0.8119612069 0.1100049213 0.8293318966 0.1417322835 0.8507543103 0.1417322835
                H 0.9500000000
                C 0.9775646552 0.1417322835 1.0000000000 0.1827145669 1.0000000000 0.2332677165
@@ -35,136 +37,164 @@
                C 0.1449353448 0.0211518701 0.1565140086 0.0000000000 0.1707919536 0.0000000000
                H 0.7731681034
                C 0.7945905172 0.0000000000 0.8119612069 0.0317278543 0.8119612069 0.0708661417 Z"
-          />
-        </clipPath>
-      </defs>
-    </svg>
-
-    <div class="hero">
-      <div class="hero-bg"></div>
-
-      <div class="hero-mask">
-        <img
-          class="spiderman-bg"
-          src="./assets/spiderman-bg.png"
-          alt="Spider-Man"
-        />
-      </div>
-
-      <img class="side-icon" src="./assets/side-icon.svg" alt="Side Icon" />
-
-      <nav class="header">
-        <div class="header-left">
-          <img
-            src="./assets/vector-logo.svg"
-            alt="Vector Logo"
-            class="vector-logo"
-          />
-          <img
-            src="./assets/marvel-logo.svg"
-            alt="Marvel Logo"
-            class="marvel-logo"
-          />
-        </div>
-        <div class="header-right">
-          <span class="trailer-text">TRAILER</span>
-          <button class="buy-ticket-btn">
-            <span class="buy-ticket-text">COMPRAR INGRESSOS</span>
-            <img
-              src="./assets/ticket-icon.svg"
-              alt="Ticket"
-              class="ticket-icon"
-            />
-          </button>
-        </div>
-      </nav>
-
-      <div class="logo-section">
-        <img
-          src="./assets/spiderman-logo.svg"
-          alt="Spider-Man Logo"
-          class="spiderman-logo"
-        />
-        <span class="brand-new-day">brand new day</span>
-      </div>
-
-      <div class="synopsis">
-        É um NOVO DIA para Peter Parker. Agora, ele combate o crime em tempo
-        integral como Homem-Aranha em um mundo que não se lembra dele.
-      </div>
-
-      <div class="release-date">
-        <span class="release-label">DATA DE LANÇAMENTO</span>
-        <span class="release-value">30/07</span>
-      </div>
-
-      <div class="scroll-circle">
-        <svg
-          viewBox="0 0 165 165"
-          width="165"
-          height="165"
-          class="circle-text-svg"
-        >
-          <defs>
-            <path
-              id="circlePath1"
-              d="M 82.5,82.5 m -60,0 a 60,60 0 1,1 120,0 a 60,60 0 1,1 -120,0"
-              fill="none"
-            />
+              />
+            </clipPath>
           </defs>
-          <text
-            fill="rgba(0,0,0,0.5)"
-            font-family="Poppins, sans-serif"
-            font-size="11"
-            font-weight="400"
-            letter-spacing="2"
-          >
-            <textPath href="#circlePath1" startOffset="0%">
-              ROLE A PÁGINA &nbsp;|&nbsp; ROLE A PÁGINA &nbsp;|&nbsp;
-            </textPath>
-          </text>
         </svg>
-        <img src="./assets/hand-icon.svg" alt="Hand Icon" class="hand-icon" />
+
+        <div class="hero">
+          <div class="hero-bg"></div>
+
+          <div class="hero-mask">
+            <div class="stage">
+              <canvas id="stageCanvas" class="stage-canvas"></canvas>
+              <img
+                class="spiderman-bg spiderman-bg-fallback"
+                src="./assets/spiderman-bg.png"
+                alt="Spider-Man"
+              />
+            </div>
+          </div>
+
+          <img class="side-icon" src="./assets/side-icon.svg" alt="Side Icon" />
+
+          <nav class="header">
+            <div class="header-left">
+              <img
+                src="./assets/vector-logo.svg"
+                alt="Vector Logo"
+                class="vector-logo"
+              />
+              <img
+                src="./assets/marvel-logo.svg"
+                alt="Marvel Logo"
+                class="marvel-logo"
+              />
+            </div>
+            <div class="header-right">
+              <span class="trailer-text">TRAILER</span>
+              <button class="buy-ticket-btn">
+                <span class="buy-ticket-text">COMPRAR INGRESSOS</span>
+                <img
+                  src="./assets/ticket-icon.svg"
+                  alt="Ticket"
+                  class="ticket-icon"
+                />
+              </button>
+            </div>
+          </nav>
+
+          <div class="logo-section">
+            <img
+              src="./assets/spiderman-logo.svg"
+              alt="Spider-Man Logo"
+              class="spiderman-logo"
+            />
+            <span class="brand-new-day">brand new day</span>
+          </div>
+
+          <div class="synopsis-wrap">
+            <p class="synopsis synopsis--1 is-active">
+              É um NOVO DIA para Peter Parker. Agora, ele combate o crime em
+              tempo integral como Homem-Aranha em um mundo que não se lembra
+              dele.
+            </p>
+            <p class="synopsis synopsis--2">
+              Mas a pressão de ver seus antigos amigos seguirem em frente sem
+              ele começa a desencadear uma mudança em Peter, uma transformação
+              que ele talvez não consiga controlar.
+            </p>
+            <p class="synopsis synopsis--3">
+              Só que essa mudança pode ser justamente a única coisa capaz de
+              deter uma nova e chocante ameaça à cidade e às pessoas que ele
+              ama: um vilão poderoso que ninguém consegue ver.
+            </p>
+          </div>
+
+          <div class="release-date">
+            <span class="release-label">Developed by</span>
+            <span class="release-value">Pedrofig</span>
+          </div>
+
+          <div class="scroll-circle">
+            <svg
+              viewBox="0 0 165 165"
+              width="165"
+              height="165"
+              class="circle-text-svg"
+            >
+              <defs>
+                <path
+                  id="circlePath1"
+                  d="M 82.5,82.5 m -60,0 a 60,60 0 1,1 120,0 a 60,60 0 1,1 -120,0"
+                  fill="none"
+                />
+              </defs>
+              <text
+                fill="rgba(0,0,0,0.5)"
+                font-family="Poppins, sans-serif"
+                font-size="11"
+                font-weight="400"
+                letter-spacing="2"
+              >
+                <textPath href="#circlePath1" startOffset="0%">
+                  ROLE A PÁGINA &nbsp;|&nbsp; ROLE A PÁGINA &nbsp;|&nbsp;
+                </textPath>
+              </text>
+            </svg>
+            <img
+              src="./assets/hand-icon.svg"
+              alt="Hand Icon"
+              class="hand-icon"
+            />
+          </div>
+        </div>
+
+        <section class="cast">
+          <img
+            class="cast-image"
+            src="./assets/zendaya-bg.png"
+            alt="Zendaya como MJ"
+          />
+
+          <div class="cast-block">
+            <h2 class="cast-title">elenco</h2>
+
+            <div class="cast-actor-block">
+              <h3 class="cast-actor-name">Zendaya</h3>
+              <p class="cast-actor-role">Michelle “MJ” JONES</p>
+            </div>
+
+            <div class="cast-list">
+              <img
+                src="./assets/vertical-bar.svg"
+                alt="Barra vertical"
+                class="cast-list-bar"
+              />
+              <div class="cast-list-items">
+                <span class="cast-list-item cast-list-item--active">
+                  Michelle “MJ” JONES
+                </span>
+                <span class="cast-list-item cast-list-item--selected">
+                  Michelle “MJ” JONES
+                </span>
+                <span class="cast-list-item cast-list-item--active">
+                  Michelle “MJ” JONES
+                </span>
+                <span class="cast-list-item cast-list-item--active">
+                  Michelle “MJ” JONES
+                </span>
+              </div>
+            </div>
+          </div>
+        </section>
       </div>
     </div>
 
-    <section class="cast">
-      <img
-        class="cast-image"
-        src="./assets/zendaya-bg.png"
-        alt="Zendaya como MJ"
-      />
-
-      <div class="cast-block">
-        <h2 class="cast-title">elenco</h2>
-
-        <div class="cast-actor-block">
-          <h3 class="cast-actor-name">Zendaya</h3>
-          <p class="cast-actor-role">Michelle “MJ” JONES</p>
-        </div>
-
-        <div class="cast-list">
-          <img
-            src="./assets/vertical-bar.svg"
-            alt="Barra vertical"
-            class="cast-list-bar"
-          />
-          <div class="cast-list-items">
-            <span class="cast-list-item cast-list-item--active">
-              Michelle “MJ” JONES
-            </span>
-            <span class="cast-list-item cast-list-item--selected">
-              Michelle “MJ” JONES
-            </span>
-            <span class="cast-list-item cast-list-item--active">
-              Michelle “MJ” JONES
-            </span>
-            <span class="cast-list-item cast-list-item--active">
-              Michelle “MJ” JONES
-            </span>
-          </div>
-        </div>
-      </div>
-    </section>
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/gsap-trial@3.12.5/dist/ScrollSmoother.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/gsap-trial@3.12.5/dist/SplitText.min.js"></script>
+    <script src="./animacoes.js"></script>
   </body>
 </html>
