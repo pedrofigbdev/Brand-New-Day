@@ -72,15 +72,10 @@
               />
             </div>
             <div class="header-right">
-              <span class="trailer-text">TRAILER</span>
-              <button class="buy-ticket-btn">
-                <span class="buy-ticket-text">COMPRAR INGRESSOS</span>
-                <img
-                  src="./assets/ticket-icon.svg"
-                  alt="Ticket"
-                  class="ticket-icon"
-                />
-              </button>
+              <a class="trailer-text" href="./assets/trailer.mp4">TRAILER</a>
+              <a class="buy-ticket-btn" href="#elenco">
+                <span class="buy-ticket-text">veja o elenco</span>
+              </a>
             </div>
           </nav>
 
@@ -114,6 +109,120 @@
           <div class="release-date">
             <span class="release-label">Developed by</span>
             <span class="release-value">Pedrofig</span>
+          </div>
+
+          <div class="movie">
+            <div class="movie-left">
+              <img
+                class="movie-image"
+                src="./assets/spiderman-bg.png"
+                alt="Poster do filme Spider-Man"
+              />
+            </div>
+            <div class="movie-right">
+              <p class="movie-text movie-text--1">
+                Uma história épica sobre coragem, sacrifício e o peso de ser um
+                herói quando todo mundo se esqueceu de quem você é.
+              </p>
+              <p class="movie-text movie-text--2">
+                Com efeitos visuais inovadores, coreografias de luta
+                cinematográfica e uma trilha sonora que mistura orquestra
+                sinfônica com batidas eletrônicas de Nova York.
+              </p>
+              <p class="movie-text movie-text--3">
+                Marvel Studios apresenta uma experiência exclusiva para os
+                maiores fãs do Homem-Aranha — prepare a pipoca.
+              </p>
+            </div>
+          </div>
+
+          <div class="trailer-reveal" id="trailerReveal">
+            <div class="trailer-inner">
+              <video
+                id="trailerVideo"
+                class="trailer-video"
+                src="./assets/trailer.mp4"
+                muted
+                playsinline
+                preload="auto"
+                loop
+                autoplay
+              ></video>
+              <div class="trailer-overlay"></div>
+
+              <button
+                type="button"
+                class="trailer-play-btn"
+                id="trailerPlayBtn"
+                aria-label="Assistir trailer"
+              >
+                <svg viewBox="0 0 84 84" class="trailer-play-svg">
+                  <circle
+                    cx="42"
+                    cy="42"
+                    r="41"
+                    fill="rgba(0,0,0,0.62)"
+                    stroke="rgba(255,255,255,0.85)"
+                    stroke-width="2"
+                  />
+                  <polygon
+                    points="34,24 64,42 34,60"
+                    fill="#FFFFFF"
+                    transform="translate(2, 0)"
+                  />
+                </svg>
+              </button>
+
+              <div class="trailer-player" id="trailerPlayer" aria-hidden="true">
+                <button
+                  type="button"
+                  class="player-btn player-btn--play"
+                  id="playerPlayPause"
+                  aria-label="Pausar"
+                >
+                  <svg viewBox="0 0 24 24" class="player-icon">
+                    <rect x="6" y="5" width="4" height="14" fill="#fff" />
+                    <rect x="14" y="5" width="4" height="14" fill="#fff" />
+                  </svg>
+                </button>
+                <div class="player-seek" id="playerSeek">
+                  <div class="player-seek-track">
+                    <div
+                      class="player-seek-progress"
+                      id="playerSeekProgress"
+                    ></div>
+                    <div class="player-seek-thumb" id="playerSeekThumb"></div>
+                  </div>
+                  <span class="player-time" id="playerTime">00:00 / 00:00</span>
+                </div>
+                <button
+                  type="button"
+                  class="player-btn player-btn--mute"
+                  id="playerMute"
+                  aria-label="Ativar som"
+                >
+                  <svg viewBox="0 0 24 24" class="player-icon">
+                    <path
+                      d="M3 9v6h4l5 5V4L7 9H3zm13.5 3a4.5 4.5 0 0 0-2.5-4.03v8.05A4.5 4.5 0 0 0 16.5 12z"
+                      fill="#fff"
+                    />
+                  </svg>
+                </button>
+                <button
+                  type="button"
+                  class="player-btn player-btn--full"
+                  id="playerFull"
+                  aria-label="Tela cheia"
+                >
+                  <svg viewBox="0 0 24 24" class="player-icon">
+                    <path
+                      d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"
+                      fill="#fff"
+                    />
+                  </svg>
+                </button>
+              </div>
+            </div>
           </div>
 
           <div class="scroll-circle">
@@ -150,51 +259,97 @@
           </div>
         </div>
 
-        <section class="cast">
-          <img
-            class="cast-image"
-            src="./assets/zendaya-bg.png"
-            alt="Zendaya como MJ"
-          />
-
-          <div class="cast-block">
-            <h2 class="cast-title">elenco</h2>
-
-            <div class="cast-actor-block">
-              <h3 class="cast-actor-name">Zendaya</h3>
-              <p class="cast-actor-role">Michelle “MJ” JONES</p>
-            </div>
-
-            <div class="cast-list">
+        <section
+          class="cast cast--sequence"
+          id="elenco"
+          aria-labelledby="cast-title"
+        >
+          <div class="cast__media">
+            <!-- Edit actor names and roles here; the picker uses the same data. -->
+            <div
+              class="cast__slide"
+              data-name="Ator 01"
+              data-role="Personagem 01"
+            >
               <img
-                src="./assets/vertical-bar.svg"
-                alt="Barra vertical"
-                class="cast-list-bar"
+                src="./assets/elenco/img1.webp"
+                alt="Ator 01"
+                decoding="async"
               />
-              <div class="cast-list-items">
-                <span class="cast-list-item cast-list-item--active">
-                  Michelle “MJ” JONES
-                </span>
-                <span class="cast-list-item cast-list-item--selected">
-                  Michelle “MJ” JONES
-                </span>
-                <span class="cast-list-item cast-list-item--active">
-                  Michelle “MJ” JONES
-                </span>
-                <span class="cast-list-item cast-list-item--active">
-                  Michelle “MJ” JONES
-                </span>
+            </div>
+            <div
+              class="cast__slide"
+              data-name="Ator 02"
+              data-role="Personagem 02"
+              aria-hidden="true"
+            >
+              <img
+                src="./assets/elenco/img2.webp"
+                alt="Ator 02"
+                decoding="async"
+              />
+            </div>
+            <div
+              class="cast__slide"
+              data-name="Ator 03"
+              data-role="Personagem 03"
+              aria-hidden="true"
+            >
+              <img
+                src="./assets/elenco/img3.webp"
+                alt="Ator 03"
+                decoding="async"
+              />
+            </div>
+            <div
+              class="cast__slide"
+              data-name="Ator 04"
+              data-role="Personagem 04"
+              aria-hidden="true"
+            >
+              <img
+                src="./assets/elenco/img4.webp"
+                alt="Ator 04"
+                decoding="async"
+              />
+            </div>
+            <div
+              class="cast__slide"
+              data-name="Ator 05"
+              data-role="Personagem 05"
+              aria-hidden="true"
+            >
+              <img
+                src="./assets/elenco/img5.webp"
+                alt="Ator 05"
+                decoding="async"
+              />
+            </div>
+          </div>
+          <div class="cast__info">
+            <h2 class="cast__title" id="cast-title">elenco</h2>
+            <div class="cast__person">
+              <div class="cast__person-item">
+                <h3>Ator 01</h3>
+                <p>Personagem 01</p>
               </div>
             </div>
+            <nav class="cast__picker" aria-label="Selecionar ator">
+              <div class="cast__rail" aria-hidden="true">
+                <div class="cast__progress"></div>
+                <img class="cast__spider" src="./assets/side-icon.svg" alt="" />
+              </div>
+              <div class="cast__options"></div>
+            </nav>
           </div>
         </section>
       </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/gsap-trial@3.12.5/dist/ScrollSmoother.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/gsap-trial@3.12.5/dist/SplitText.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/gsap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/ScrollTrigger.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/ScrollSmoother.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/SplitText.min.js"></script>
     <script src="./animacoes.js"></script>
   </body>
 </html>

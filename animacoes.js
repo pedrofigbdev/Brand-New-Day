@@ -53,6 +53,7 @@
     const y = (ch - h) / 2;
     ctx.clearRect(0, 0, cw, ch);
     ctx.drawImage(img, x, y, w, h);
+    if (fallback && cw > 0 && ch > 0) fallback.style.opacity = 0;
   }
 
   function preloadFrames() {
@@ -63,12 +64,8 @@
         img.decoding = "async";
         img.onload = function () {
           loaded++;
-          if (loaded === 1 && fallback) {
-            fallback.style.opacity = 0;
-          }
           if (loaded === frameFiles.length) {
             canvasReady = true;
-            renderFrame(0);
             resolve();
           }
         };
@@ -85,53 +82,248 @@
     });
   }
 
-  function randomOrder(length) {
-    const arr = [];
-    for (let i = 0; i < length; i++) arr.push(i);
-    for (let i = arr.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [arr[i], arr[j]] = [arr[j], arr[i]];
+  function setupTrailerPlayer() {
+    const video = document.getElementById("trailerVideo");
+    const playBtn = document.getElementById("trailerPlayBtn");
+    const player = document.getElementById("trailerPlayer");
+    const playPause = document.getElementById("playerPlayPause");
+    const muteBtn = document.getElementById("playerMute");
+    const fullBtn = document.getElementById("playerFull");
+    const seekTrack = document.querySelector(".player-seek-track");
+    const seekProgress = document.getElementById("playerSeekProgress");
+    const seekThumb = document.getElementById("playerSeekThumb");
+    const timeLabel = document.getElementById("playerTime");
+    const reveal = document.getElementById("trailerReveal");
+    const overlay = document.querySelector(".trailer-overlay");
+    if (!video) return;
+    let available = false;
+    let watching = false;
+    player.inert = true;
+    playBtn.disabled = true;
+
+    function updateAvailability(ready, inView = true) {
+      available = ready && inView;
+      if (!available && watching) {
+        watching = false;
+        video.muted = true;
+        video.loop = true;
+        overlay.style.opacity = "";
+      }
+      reveal.classList.toggle("is-active", available);
+      reveal.classList.toggle("is-playing", watching);
+      playBtn.classList.toggle("is-visible", available && !watching);
+      playBtn.disabled = !available || watching;
+      player.classList.toggle("is-visible", available && watching);
+      player.inert = !available || !watching;
+      player.setAttribute("aria-hidden", String(player.inert));
+      if (!inView) video.pause();
+      else if (!watching && video.paused) video.play().catch(() => {});
     }
-    return arr;
-  }
 
-  function buildSynopsisTl(charsOut, charsIn, duration, startOffset, endOffset) {
-    const tl = gsap.timeline();
-    const outOrder = randomOrder(charsOut.length);
-    const inOrder = randomOrder(charsIn.length);
+    function fmt(sec) {
+      if (!isFinite(sec) || sec < 0) sec = 0;
+      const m = Math.floor(sec / 60);
+      const s = Math.floor(sec % 60);
+      return `${String(m).padStart(2, "0")}:${String(s).padStart(2, "0")}`;
+    }
 
-    const stepOut = duration / Math.max(1, charsOut.length);
-    outOrder.forEach((idx, k) => {
-      const delay = stepOut * k;
-      tl.to(
-        charsOut[idx],
-        {
-          opacity: 0,
-          y: -6,
-          ease: "power1.in",
-          duration: 0.22,
-        },
-        startOffset + delay
+    function setPlayPauseIcon(playing) {
+      if (!playPause) return;
+      if (playing) {
+        playPause.setAttribute("aria-label", "Pausar");
+        playPause.innerHTML =
+          '<svg viewBox="0 0 24 24" class="player-icon"><rect x="6" y="5" width="4" height="14" fill="#fff"/><rect x="14" y="5" width="4" height="14" fill="#fff"/></svg>';
+      } else {
+        playPause.setAttribute("aria-label", "Reproduzir");
+        playPause.innerHTML =
+          '<svg viewBox="0 0 24 24" class="player-icon"><polygon points="6,4 20,12 6,20" fill="#fff"/></svg>';
+      }
+    }
+
+    function setMuteIcon(muted) {
+      if (!muteBtn) return;
+      if (muted) {
+        muteBtn.setAttribute("aria-label", "Ativar som");
+        muteBtn.innerHTML =
+          '<svg viewBox="0 0 24 24" class="player-icon"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3a4.5 4.5 0 0 0-2.5-4.03v8.05A4.5 4.5 0 0 0 16.5 12zM14 3.23v2.06a7 7 0 0 1 0 13.42v2.06A9 9 0 0 0 14 3.23z" fill="#fff"/></svg>';
+      } else {
+        muteBtn.setAttribute("aria-label", "Silenciar");
+        muteBtn.innerHTML =
+          '<svg viewBox="0 0 24 24" class="player-icon"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3a4.5 4.5 0 0 0-2.5-4.03v8.05A4.5 4.5 0 0 0 16.5 12zM14 3.23v2.06a7 7 0 0 1 0 13.42v2.06A9 9 0 0 0 14 3.23zM19 12a6.98 6.98 0 0 0-.57-2.7L20.5 7.23A8.97 8.97 0 0 1 21 12c0 2.12-.74 4.07-2 5.65l-1.93-1.93A6.98 6.98 0 0 0 19 12z" fill="#fff"/><path d="M17 12a4.9 4.9 0 0 0-.41-1.94L18.1 8.55A7 7 0 0 1 19 12c0 1.6-.57 3.07-1.5 4.25L15.6 14.1A4.9 4.9 0 0 0 17 12z" fill="#fff" opacity="0"/></svg>';
+      }
+    }
+
+    function updateSeekUI() {
+      if (
+        !video ||
+        !isFinite(video.duration) ||
+        !seekProgress ||
+        !seekThumb ||
+        !timeLabel
+      )
+        return;
+      const p = Math.max(
+        0,
+        Math.min(1, video.currentTime / video.duration || 0),
       );
-    });
+      seekProgress.style.width = `${p * 100}%`;
+      seekThumb.style.left = `${p * 100}%`;
+      timeLabel.textContent = `${fmt(video.currentTime)} / ${fmt(video.duration)}`;
+      seekTrack.setAttribute("aria-valuenow", String(Math.round(p * 100)));
+      seekTrack.setAttribute("aria-valuetext", timeLabel.textContent);
+    }
 
-    gsap.set(charsIn, { opacity: 0, y: 6 });
-    const stepIn = duration / Math.max(1, charsIn.length);
-    inOrder.forEach((idx, k) => {
-      const delay = stepIn * k;
-      tl.to(
-        charsIn[idx],
-        {
-          opacity: 1,
-          y: 0,
-          ease: "power1.out",
-          duration: 0.22,
+    try {
+      const autoplay = video.play();
+      if (autoplay && typeof autoplay.catch === "function") {
+        autoplay.catch(() => {
+          /* ignore - will play via user interaction */
+        });
+      }
+    } catch (e) {
+      /* noop */
+    }
+
+    setPlayPauseIcon(!video.paused);
+    setMuteIcon(Boolean(video.muted));
+
+    video.addEventListener("loadedmetadata", updateSeekUI);
+    video.addEventListener("timeupdate", updateSeekUI);
+    video.addEventListener("play", () => setPlayPauseIcon(true));
+    video.addEventListener("pause", () => setPlayPauseIcon(false));
+    video.addEventListener("volumechange", () =>
+      setMuteIcon(video.muted || video.volume === 0),
+    );
+
+    if (playBtn) {
+      playBtn.addEventListener("click", async () => {
+        if (!available) return;
+        watching = true;
+        video.loop = false;
+        video.muted = false;
+        video.currentTime = 0;
+        if (video.volume === 0) video.volume = 0.8;
+        updateAvailability(true);
+        try {
+          await video.play();
+          if (watching && available) {
+            overlay.style.opacity = 0;
+            playPause.focus({ preventScroll: true });
+          }
+        } catch (error) {
+          watching = false;
+          video.muted = true;
+          video.loop = true;
+          updateAvailability(available);
+        }
+      });
+    }
+
+    if (playPause) {
+      playPause.addEventListener("click", () => {
+        if (video.paused) {
+          const p = video.play();
+          if (p && typeof p.catch === "function") p.catch(() => {});
+        } else {
+          video.pause();
+        }
+      });
+    }
+
+    if (muteBtn) {
+      muteBtn.addEventListener("click", () => {
+        video.muted = !video.muted;
+        if (!video.muted && video.volume === 0) video.volume = 0.8;
+      });
+    }
+
+    if (fullBtn) {
+      fullBtn.addEventListener("click", () => {
+        if (!reveal) return;
+        if (!document.fullscreenElement) {
+          const req =
+            reveal.requestFullscreen || reveal.webkitRequestFullscreen;
+          if (req) {
+            const r = req.call(reveal);
+            if (r && typeof r.catch === "function") r.catch(() => {});
+          }
+        } else {
+          const exit = document.exitFullscreen || document.webkitExitFullscreen;
+          if (exit) {
+            const r = exit.call(document);
+            if (r && typeof r.catch === "function") r.catch(() => {});
+          }
+        }
+      });
+    }
+
+    function seekFromEvent(evt) {
+      if (!seekTrack || !video || !isFinite(video.duration)) return;
+      const rect = seekTrack.getBoundingClientRect();
+      let x = 0;
+      if (evt.touches && evt.touches.length)
+        x = evt.touches[0].clientX - rect.left;
+      else x = (evt.clientX || rect.left) - rect.left;
+      const ratio = gsap.utils.clamp(0, 1, x / rect.width);
+      video.currentTime = ratio * video.duration;
+      updateSeekUI();
+    }
+
+    if (seekTrack) {
+      seekTrack.setAttribute("role", "slider");
+      seekTrack.setAttribute("aria-label", "Posicao do trailer");
+      seekTrack.setAttribute("aria-valuemin", "0");
+      seekTrack.setAttribute("aria-valuemax", "100");
+      seekTrack.setAttribute("aria-valuenow", "0");
+      seekTrack.tabIndex = 0;
+      seekTrack.addEventListener("keydown", (event) => {
+        if (!Number.isFinite(video.duration)) return;
+        const times = {
+          ArrowLeft: video.currentTime - 5,
+          ArrowRight: video.currentTime + 5,
+          Home: 0,
+          End: video.duration,
+        };
+        if (!(event.key in times)) return;
+        event.preventDefault();
+        video.currentTime = gsap.utils.clamp(
+          0,
+          video.duration,
+          times[event.key],
+        );
+        updateSeekUI();
+      });
+      let dragging = false;
+      seekTrack.addEventListener("mousedown", (e) => {
+        dragging = true;
+        seekFromEvent(e);
+      });
+      seekTrack.addEventListener(
+        "touchstart",
+        (e) => {
+          dragging = true;
+          seekFromEvent(e);
         },
-        endOffset + delay
+        { passive: true },
       );
-    });
-
-    return tl;
+      window.addEventListener("mousemove", (e) => {
+        if (dragging) seekFromEvent(e);
+      });
+      window.addEventListener(
+        "touchmove",
+        (e) => {
+          if (dragging) seekFromEvent(e);
+        },
+        { passive: true },
+      );
+      window.addEventListener("mouseup", () => {
+        dragging = false;
+      });
+      window.addEventListener("touchend", () => {
+        dragging = false;
+      });
+    }
+    return updateAvailability;
   }
 
   function initAnimations() {
@@ -146,99 +338,149 @@
     const s1 = document.querySelector(".synopsis--1");
     const s2 = document.querySelector(".synopsis--2");
     const s3 = document.querySelector(".synopsis--3");
-
     const split1 = new SplitText(s1, { type: "chars", charsClass: "synchar" });
     const split2 = new SplitText(s2, { type: "chars", charsClass: "synchar" });
     const split3 = new SplitText(s3, { type: "chars", charsClass: "synchar" });
 
-    // Enable visibility for containers now that SplitText has processed them
     gsap.set([s1, s2, s3], { opacity: 1 });
-
-    // Initial character opacities
     gsap.set(split1.chars, { opacity: 1 });
     gsap.set(split2.chars, { opacity: 0 });
     gsap.set(split3.chars, { opacity: 0 });
 
     const hero = document.querySelector(".hero");
+    const reveal = document.getElementById("trailerReveal");
+    const movie = document.querySelector(".movie");
+    const movieImg = document.querySelector(".movie-left");
+    const movieTxt = document.querySelector(".movie-right");
+    const updatePlayer = setupTrailerPlayer();
+    const opening = { width: 0, height: 0 };
+    const bounds = {};
+    const pushLeft = gsap.quickSetter(movieImg, "x", "px");
+    const pushRight = gsap.quickSetter(movieTxt, "x", "px");
+    let trigger;
+    let lastFrame = -1;
+    let lastPlayerState = "";
 
-    const master = gsap.timeline();
+    function measure() {
+      const rect = hero.getBoundingClientRect();
+      const left = movieImg.getBoundingClientRect();
+      const right = movieTxt.getBoundingClientRect();
+      bounds.width = rect.width;
+      bounds.height = Math.min(rect.height, window.innerHeight);
+      // Remove only the animated translation, retaining the responsive layout.
+      bounds.leftEdge =
+        left.right - rect.left - Number(gsap.getProperty(movieImg, "x"));
+      bounds.rightEdge =
+        right.left - rect.left - Number(gsap.getProperty(movieTxt, "x"));
+      hero.style.setProperty("--trailer-width", `${bounds.width}px`);
+      hero.style.setProperty("--trailer-height", `${bounds.height}px`);
+      reveal.style.top = `${bounds.height / 2}px`;
+      movie.style.top = `${bounds.height / 2}px`;
+    }
 
-    // 1. Text 1 loses opacity letter by letter (random order)
+    function render() {
+      const width = opening.width * bounds.width;
+      reveal.style.width = `${width}px`;
+      reveal.style.height = `${opening.height * bounds.height}px`;
+      // Each panel follows the mask edge only after contact; no early fade-out.
+      const edgeLeft = (bounds.width - width) / 2;
+      const edgeRight = (bounds.width + width) / 2;
+      pushLeft(
+        opening.width > 0 ? -Math.max(0, bounds.leftEdge - edgeLeft) : 0,
+      );
+      pushRight(
+        opening.width > 0 ? Math.max(0, edgeRight - bounds.rightEdge) : 0,
+      );
+      const frame = Math.round(progressState.frame);
+      if (canvasReady && frame !== lastFrame) {
+        renderFrame(frame);
+        lastFrame = frame;
+      }
+      const ready = opening.width >= 0.9999 && opening.height >= 0.9999;
+      const inView = !trigger || trigger.scroll() < trigger.end;
+      const state = `${ready}:${inView}`;
+      if (state !== lastPlayerState) {
+        updatePlayer(ready, inView);
+        lastPlayerState = state;
+      }
+    }
+
+    gsap.set([movieImg, movieTxt], { x: 0 });
+    measure();
+    const master = gsap.timeline({ paused: true, onUpdate: render });
+    const fade = (opacity) => ({
+      opacity,
+      duration: 0.25,
+      stagger: { amount: 0.6, from: "random" },
+      ease: "power1.inOut",
+    });
+
+    // Frames and letters share the same scrubbed timeline, including reverse.
     master.to(
-      split1.chars,
-      {
-        opacity: 0,
-        ease: "power1.inOut",
-        duration: 0.1,
-        stagger: { amount: 0.22, from: "random" },
-      },
-      0.05
+      progressState,
+      { frame: frameCount - 1, duration: 3, ease: "none" },
+      0,
     );
-
-    // 2. Text 2 gains opacity letter by letter (random order)
+    master.to(split1.chars, fade(0), 0);
+    master.to(split2.chars, fade(1), 0.8);
+    master.to(split2.chars, fade(0), 1.7);
+    master.to(split3.chars, fade(1), 2.15);
     master.to(
-      split2.chars,
-      {
-        opacity: 1,
-        ease: "power1.inOut",
-        duration: 0.1,
-        stagger: { amount: 0.22, from: "random" },
-      },
-      0.22
+      ".logo-section, .synopsis-wrap, .header, .release-date, .scroll-circle, .side-icon",
+      { autoAlpha: 0, duration: 0.35, ease: "power1.inOut" },
+      3.15,
     );
-
-    // 3. Text 2 loses opacity letter by letter (random order)
     master.to(
-      split2.chars,
-      {
-        opacity: 0,
-        ease: "power1.inOut",
-        duration: 0.1,
-        stagger: { amount: 0.22, from: "random" },
-      },
-      0.52
+      movie,
+      { autoAlpha: 1, duration: 0.35, ease: "power1.inOut" },
+      3.3,
     );
+    master.to(opening, { width: 1, duration: 2.2, ease: "power2.inOut" }, 3.8);
+    master.to(opening, { height: 1, duration: 2.2, ease: "power2.out" }, 3.8);
+    // Keep the hero pinned briefly after the mask opens so play is reachable.
+    master.to({}, { duration: 0.65 }, 6);
+    master.addLabel("trailerReady", 6.25);
 
-    // 4. Text 3 gains opacity letter by letter (random order)
-    master.to(
-      split3.chars,
-      {
-        opacity: 1,
-        ease: "power1.inOut",
-        duration: 0.1,
-        stagger: { amount: 0.22, from: "random" },
-      },
-      0.70
-    );
-
-    ScrollTrigger.create({
+    trigger = ScrollTrigger.create({
+      id: "hero-story",
       trigger: hero,
       start: "top top",
-      end: "+=300%",
+      end: () => `+=${window.innerHeight * 6.65}`,
       pin: true,
       anticipatePin: 1,
-      scrub: 0.6,
+      scrub: 0.55,
       animation: master,
-      onUpdate: (self) => {
-        const p = self.progress;
-        const frameIndex = gsap.utils.clamp(
-          0,
-          frameCount - 1,
-          p * (frameCount - 1)
-        );
-        progressState.frame = frameIndex;
-        if (canvasReady) renderFrame(frameIndex);
+      onRefresh: () => {
+        measure();
+        setCanvasSize();
+        lastFrame = -1;
+        render();
       },
+      onUpdate: render,
     });
+
+    document
+      .querySelector(".header-right .trailer-text")
+      .addEventListener("click", (event) => {
+        if (event.ctrlKey || event.metaKey || event.shiftKey || event.altKey)
+          return;
+        event.preventDefault();
+        const progress = master.labels.trailerReady / master.duration();
+        const destination =
+          trigger.start + (trigger.end - trigger.start) * progress;
+        smoother.scrollTo(destination, true);
+      });
 
     ScrollTrigger.refresh();
   }
 
+  function start() {
+    Promise.all([preloadFrames(), document.fonts.ready]).then(initAnimations);
+  }
+
   if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", () => {
-      preloadFrames().finally(initAnimations);
-    });
+    document.addEventListener("DOMContentLoaded", start);
   } else {
-    preloadFrames().finally(initAnimations);
+    start();
   }
 })();

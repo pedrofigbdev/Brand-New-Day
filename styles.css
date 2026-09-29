@@ -170,12 +170,15 @@ body {
 }
 
 .header-right {
+  position: relative;
+  top: clamp(8px, 1.041666667vw, 20px);
+  right: clamp(8px, 1.25vw, 24px);
   display: flex;
   flex-direction: row;
   justify-content: flex-end;
   align-items: center;
-  gap: 10px;
-  margin-top: 0;
+  gap: clamp(16px, 1.666666667vw, 32px);
+  flex-shrink: 0;
   height: clamp(44px, 3.229166667vw, 62px);
 }
 
@@ -183,11 +186,14 @@ body {
   font-family: "Poppins", sans-serif;
   font-style: normal;
   font-weight: 400;
-  font-size: clamp(12px, 1.9375vw, 18px);
+  font-size: clamp(12px, 0.9375vw, 18px);
   line-height: 1.5;
   color: rgba(255, 255, 255, 0.8);
+  text-decoration: none;
   cursor: pointer;
-  margin-top: 20px;
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
 }
 
 .buy-ticket-btn {
@@ -195,9 +201,10 @@ body {
   flex-direction: row;
   justify-content: center;
   align-items: center;
-  padding: clamp(8px, 0.8333333333vw, 16px) clamp(12px, 1.041666667vw, 20px);
+  padding: clamp(8px, 0.8333333333vw, 16px) clamp(20px, 1.666666667vw, 32px);
   gap: clamp(6px, 0.4166666667vw, 8px);
-  margin-top: 8.5%;
+  min-width: clamp(96px, 6.666666667vw, 128px);
+  flex-shrink: 0;
   height: clamp(44px, 3.229166667vw, 62px);
   background: #ffffff;
   border-radius: 64px;
@@ -222,6 +229,7 @@ body {
   letter-spacing: -0.03em;
   color: rgba(0, 0, 0, 0.9);
   white-space: nowrap;
+  text-transform: uppercase;
 }
 
 .ticket-icon {
@@ -293,13 +301,17 @@ body {
 .synopsis--2 {
   opacity: 0;
   color: #ffffff;
-  text-shadow: 0 2px 12px rgba(0, 0, 0, 0.95), 0 0 6px rgba(0, 0, 0, 1);
+  text-shadow:
+    0 2px 12px rgba(0, 0, 0, 0.95),
+    0 0 6px rgba(0, 0, 0, 1);
 }
 
 .synopsis--3 {
   opacity: 0;
   color: #ffffff;
-  text-shadow: 0 2px 12px rgba(0, 0, 0, 0.95), 0 0 6px rgba(0, 0, 0, 1);
+  text-shadow:
+    0 2px 12px rgba(0, 0, 0, 0.95),
+    0 0 6px rgba(0, 0, 0, 1);
 }
 
 .synchar {
@@ -335,6 +347,328 @@ body {
   font-size: clamp(28px, 2.760416667vw, 53px);
   line-height: 1.264150943;
   color: rgba(255, 255, 255, 0.9);
+}
+
+.movie {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: min(1280px, 88%);
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  gap: clamp(40px, 6vw, 120px);
+  z-index: 16;
+  pointer-events: none;
+  visibility: hidden;
+  opacity: 0;
+  will-change: transform, opacity;
+}
+
+.movie-left {
+  flex: 0 0 auto;
+  width: clamp(240px, 28vw, 480px);
+  aspect-ratio: 3 / 4;
+  border-radius: 28px;
+  overflow: hidden;
+  border: 2px solid rgba(255, 255, 255, 0.14);
+  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.45);
+  background: #000;
+  will-change: transform, opacity;
+}
+
+.movie-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.movie-right {
+  flex: 1 1 auto;
+  max-width: 42%;
+  display: flex;
+  flex-direction: column;
+  gap: clamp(18px, 2vw, 28px);
+  color: rgba(255, 255, 255, 0.92);
+  will-change: transform, opacity;
+}
+
+.movie-text {
+  font-family: "Poppins", sans-serif;
+  font-weight: 400;
+  font-size: clamp(14px, 1.041666667vw, 20px);
+  line-height: 1.6;
+  color: rgba(255, 255, 255, 0.92);
+  margin: 0;
+}
+
+.trailer-reveal {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  transform: translate(-50%, -50%);
+  overflow: hidden;
+  background: #000;
+  z-index: 30;
+  will-change: width, height;
+  pointer-events: none;
+}
+
+.trailer-inner {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: var(--trailer-width, 100vw);
+  height: var(--trailer-height, 100vh);
+  overflow: hidden;
+  background: #000;
+}
+
+.trailer-video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  background: #000;
+}
+
+.trailer-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.28);
+  z-index: 2;
+  transition:
+    background 0.4s ease,
+    opacity 0.4s ease;
+  pointer-events: none;
+}
+
+.trailer-play-btn {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(0.8);
+  width: clamp(76px, 9vw, 120px);
+  height: clamp(76px, 9vw, 120px);
+  z-index: 3;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+  opacity: 0;
+  visibility: hidden;
+  transition:
+    opacity 0.45s ease,
+    transform 0.45s cubic-bezier(0.2, 0.8, 0.2, 1);
+  pointer-events: none;
+  padding: 0;
+}
+
+.trailer-play-btn.is-visible {
+  opacity: 1;
+  visibility: visible;
+  transform: translate(-50%, -50%) scale(1);
+  pointer-events: auto;
+}
+
+.trailer-play-btn:hover {
+  transform: translate(-50%, -50%) scale(1.06);
+}
+
+.trailer-play-svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.trailer-player {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 4;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 20px;
+  background: linear-gradient(
+    to top,
+    rgba(0, 0, 0, 0.85) 0%,
+    rgba(0, 0, 0, 0) 100%
+  );
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(12px);
+  transition:
+    opacity 0.35s ease,
+    transform 0.35s ease;
+  pointer-events: none;
+}
+
+.trailer-player.is-visible {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+
+.player-btn {
+  width: 40px;
+  height: 40px;
+  border-radius: 999px;
+  border: 0;
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(8px);
+  color: #fff;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition:
+    background 0.2s ease,
+    transform 0.2s ease;
+  padding: 0;
+  flex: 0 0 auto;
+}
+
+.player-btn:hover {
+  background: rgba(255, 255, 255, 0.2);
+  transform: scale(1.05);
+}
+
+.player-icon {
+  width: 20px;
+  height: 20px;
+  display: block;
+}
+
+.player-seek {
+  flex: 1 1 auto;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+
+.player-seek-track {
+  position: relative;
+  flex: 1 1 auto;
+  height: 6px;
+  touch-action: none;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 999px;
+  cursor: pointer;
+  min-width: 80px;
+}
+
+.player-seek-progress {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, #e2ab00 0%, #69040c 100%);
+  border-radius: 999px;
+  pointer-events: none;
+}
+
+.player-seek-thumb {
+  position: absolute;
+  top: 50%;
+  left: 0%;
+  width: 14px;
+  height: 14px;
+  background: #fff;
+  border-radius: 999px;
+  transform: translate(-50%, -50%);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+  pointer-events: none;
+}
+
+.player-time {
+  font-family: "Poppins", sans-serif;
+  font-size: 12px;
+  line-height: 1;
+  letter-spacing: 0.3px;
+  color: rgba(255, 255, 255, 0.85);
+  white-space: nowrap;
+  flex: 0 0 auto;
+}
+
+.trailer-reveal.is-active {
+  pointer-events: auto;
+}
+
+.trailer-reveal:fullscreen {
+  width: 100vw !important;
+  height: 100vh !important;
+  top: 0 !important;
+  left: 0 !important;
+  transform: none !important;
+}
+
+.trailer-reveal:fullscreen .trailer-inner {
+  width: 100vw;
+  height: 100vh;
+}
+
+.trailer-reveal.is-playing .trailer-video {
+  object-fit: contain;
+}
+
+.player-btn:focus-visible,
+.trailer-play-btn:focus-visible,
+.player-seek-track:focus-visible {
+  outline: 2px solid #e2ab00;
+  outline-offset: 4px;
+}
+
+@media (max-width: 768px) {
+  .movie {
+    width: 92%;
+    gap: 6%;
+  }
+
+  .movie-left {
+    width: 42%;
+    border-radius: 16px;
+  }
+
+  .movie-right {
+    max-width: 46%;
+    gap: 12px;
+  }
+
+  .movie-text {
+    font-size: clamp(10px, 2.5vw, 14px);
+    line-height: 1.5;
+  }
+
+  .trailer-player {
+    gap: 8px;
+    padding: 12px;
+  }
+
+  .player-seek {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .player-seek-track {
+    flex: none;
+    min-width: 0;
+  }
+
+  .player-time {
+    font-size: 10px;
+    text-align: center;
+  }
 }
 
 .scroll-circle {
@@ -681,7 +1015,7 @@ body {
   }
 
   .trailer-text {
-    display: none;
+    display: inline-flex;
   }
 
   .buy-ticket-btn {
