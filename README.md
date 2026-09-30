@@ -7,13 +7,15 @@ An immersive and interactive concept website for the Spider-Man universe, built 
 ## 📸 Screenshots
 
 <div align="center">
-  <img src="assets/image1.png" alt="Spider-Man Hero Section" width="80%">
+  <img src="assets/image/image1.png" alt="Spider-Man Hero Section" width="80%">
   <br>
-  <img src="assets/image2.png" alt="Spider-Man Animation" width="80%">
+  <img src="assets/image/image2.png" alt="Spider-Man Animation" width="80%">
   <br>
-  <img src="assets/image3.png" alt="Cast Section" width="80%">
+  <img src="assets/image/image3.png" alt="Cast Section" width="80%">
   <br>
-  <img src="assets/image4.png" alt="Trailer Section" width="80%">
+  <img src="assets/image/image4.png" alt="Trailer Section" width="80%">
+  <br>
+  <img src="assets/image/image5.png" alt="elenco section" width="80%">
 </div>
 
 
