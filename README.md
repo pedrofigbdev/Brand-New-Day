@@ -1,6 +1,21 @@
 # 🕷️ Spider-Man: Brand New Day - Concept Website
 
+**🔗 [View Live Project](https://brand-new-day-psi.vercel.app/)**
+
 An immersive and interactive concept website for the Spider-Man universe, built with a focus on advanced scroll animations and a cinematic user experience.
+
+## 📸 Screenshots
+
+<div align="center">
+  <img src="assets/image1.png" alt="Spider-Man Hero Section" width="80%">
+  <br>
+  <img src="assets/image2.png" alt="Spider-Man Animation" width="80%">
+  <br>
+  <img src="assets/image3.png" alt="Cast Section" width="80%">
+  <br>
+  <img src="assets/image4.png" alt="Trailer Section" width="80%">
+</div>
+
 
 ### 🚀 Project Highlights
 * **GSAP Animations:** Extensive use of `ScrollTrigger`, `ScrollSmoother`, and `SplitText` to create fluid transitions that follow the user's scroll.
